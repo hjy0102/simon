@@ -24,38 +24,46 @@ function NoteBox(key, onClick) {
 
 	// Plays the audio associated with this NoteBox
 	this.play = function () {
-		playing++;
+	playing++;
+	// Easy Task !!!
+//echo function
+	//setTimeout(function() {
 		// Always play from the beginning of the file.
 		audioEl.currentTime = 0;
 		audioEl.play();
+	//}, 2500);
 
 		// Set active class for NOTE_DURATION time
 		boxEl.classList.add('active');
 		setTimeout(function () {
-			playing--
+			playing--;
 			if (!playing) {
 				boxEl.classList.remove('active');
 			}
-		}, NOTE_DURATION)
-	}
+		}, NOTE_DURATION);
+	};
 
 	// Enable this NoteBox
 	this.enable = function () {
 		enabled = true;
-	}
+	};
 
 	// Disable this NoteBox
 	this.disable = function () {
 		enabled = false;
-	}
+	};
 
 	// Call this NoteBox's clickHandler and play the note.
 	this.clickHandler = function () {
 		if (!enabled) return;
 
-		this.onClick(this.key)
-		this.play()
-	}.bind(this)
+		this.onClick(this.key);
+		this.play();
+	}.bind(this);
+
+	this.getBox = function() {
+		return boxEl;
+	};
 
 	boxEl.addEventListener('mousedown', this.clickHandler);
 }
@@ -65,12 +73,60 @@ function NoteBox(key, onClick) {
 // This will create a map from key strings (i.e. 'c') to NoteBox objects so that
 // clicking the corresponding boxes on the page will play the NoteBox's audio.
 // It will also demonstrate programmatically playing notes by calling play directly.
-var notes = {};
 
-KEYS.forEach(function (key) {
-	notes[key] = new NoteBox(key);
-});
+// Challenge Task
 
-KEYS.concat(KEYS.slice().reverse()).forEach(function(key, i) {
-	setTimeout(notes[key].play.bind(null, key), i * NOTE_DURATION);
-});
+function play() {
+	// Initialize variables/arrays
+	var notes = {};
+	var computerNotes = [];
+	var playerNotes = [];
+
+	// Add event listeners to each note after generating a new NodeBox for each note.
+	KEYS.forEach(function (key) {
+		notes[key] = new NoteBox(key);
+		notes[key].getBox().addEventListener('mousedown', function(event) {
+			addClickEvents(event);
+		});
+	});
+	// Function to add functionality to click event of each note.
+	this.addClickEvents = function(e) {
+		playerNotes.push(event.currentTarget.id);
+
+		var correctNote = true;
+		for (var i = 0; i < playerNotes.length; i++) {
+		 	if (computerNotes[i] != playerNotes[i]) { correctNote = false; }
+		}
+				if(correctNote) {
+					if (playerNotes.length == computerNotes.length) {
+						setTimeout(startGame, NOTE_DURATION);
+						playerNotes = [];
+					}
+				} else {
+					alert("Wrong Note! Press OK to restart.");
+					computerNotes = [];
+					playerNotes = [];	
+					setTimeout(startGame, NOTE_DURATION * 2);
+				}
+	}.bind(this);
+
+
+	// Start the game 
+	this.startGame = function() {
+		// Use this to generate the next note that the computer plays
+		var note = Math.floor(Math.random() * Object.keys(notes).length);
+		var nextNoteplayed = KEYS[note];
+		computerNotes.push(nextNoteplayed);
+
+		computerNotes.forEach(function(key, i) {
+			setTimeout(notes[key].play.bind(key), i * NOTE_DURATION);
+		});
+	};
+
+	// Call the start game function, which calls the other helper functions.
+	startGame();
+}
+// Call the function to start the game.
+alert("Press OK to start the game.");
+play();
+

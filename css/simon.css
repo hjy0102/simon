@@ -2,7 +2,13 @@ html, body {
   background-color: black;
   height: 100%;
 }
-
+#score {
+  color: white;
+  text-align: center;
+  align-items: center;
+  flex-direction: row;
+  
+}
 /* Container for note boxes */
 #simon {
   display: flex;
